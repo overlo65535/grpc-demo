@@ -1,0 +1,18 @@
+﻿syntax = "proto3";
+option csharp_namespace = "GrpcDemo.Protos";
+package grpcdemo;
+
+message Request {
+  string Content = 1;
+}
+
+message Response {
+  string Message = 1;
+}
+
+service FirstServiceDefinition {
+  rpc Unary (Request) returns (Response);
+  rpc ClientStreaming (stream Request) returns (Response);
+  rpc ServerStreaming (Request) returns (stream Response);
+  rpc DuplexStreaming (stream Request) returns (stream Response);
+}
