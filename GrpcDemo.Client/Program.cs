@@ -20,8 +20,13 @@ Console.ReadLine();
 void UnaryTest(FirstServiceDefinition.FirstServiceDefinitionClient client)
 {
     var request = new Request() { Content = "Client" };
-    
-    var response = client.UnaryDemo(request, deadline: DateTime.UtcNow.AddSeconds(10));
+    var headers = new Metadata
+    {
+        { "Content-Type", "application/grpc" },
+        { "Culture-Name", Thread.CurrentThread.CurrentCulture.Name }
+    };
+
+    var response = client.UnaryDemo(request, deadline: DateTime.UtcNow.AddSeconds(10), headers: headers);
     Console.WriteLine(response.Message);
 }
 
