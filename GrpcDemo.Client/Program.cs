@@ -21,7 +21,7 @@ void UnaryTest(FirstServiceDefinition.FirstServiceDefinitionClient client)
 {
     var request = new Request() { Content = "Client" };
     
-    var response = client.UnaryDemo(request, deadline: DateTime.Now.AddSeconds(10));
+    var response = client.UnaryDemo(request, deadline: DateTime.UtcNow.AddSeconds(10));
     Console.WriteLine(response.Message);
 }
 
@@ -39,12 +39,25 @@ async Task ClientStreamingTest(FirstServiceDefinition.FirstServiceDefinitionClie
 
 async Task ServerStreamingTest(FirstServiceDefinition.FirstServiceDefinitionClient client)
 {
+    var cancellationTokenSource = new CancellationTokenSource();
     var request = new Request() { Content = "Client" };
     using var response = client.ServerStreamingDemo(request);
 
-    await foreach (var responseItem in response.ResponseStream.ReadAllAsync())
+    var random = new Random();
+    try
     {
-        Console.WriteLine(responseItem.Message);
+        await foreach (var responseItem in response.ResponseStream.ReadAllAsync(cancellationTokenSource.Token))
+        {
+            if (responseItem.Message.Contains(random.Next(1, 101).ToString()))
+            {
+                cancellationTokenSource.Cancel();
+            }
+            Console.WriteLine(responseItem.Message);
+        }
+    }
+    catch (RpcException e) when (e.StatusCode == StatusCode.Cancelled)
+    {
+        Console.WriteLine(e);
     }
 }
 

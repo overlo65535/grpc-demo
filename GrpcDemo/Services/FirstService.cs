@@ -35,6 +35,12 @@ public class FirstService : FirstServiceDefinition.FirstServiceDefinitionBase
     {
         for (int i = 0; i < 100; i++)
         {
+            if (context.CancellationToken.IsCancellationRequested)
+            {
+                Console.WriteLine("server stream was cancelled on iteration:" + i);
+                return;
+            }
+
             await responseStream.WriteAsync(new Response { Message = "response " + i });
         }
     }
