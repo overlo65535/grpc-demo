@@ -59,6 +59,9 @@ async Task ServerStreamingTest(FirstServiceDefinition.FirstServiceDefinitionClie
             }
             Console.WriteLine(responseItem.Message);
         }
+
+        var trailers = response.GetTrailers();
+        Console.WriteLine("Demo trailer value:" + trailers.GetValue("trailer-key"));
     }
     catch (RpcException e) when (e.StatusCode == StatusCode.Cancelled)
     {

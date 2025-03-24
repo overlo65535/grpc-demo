@@ -24,8 +24,6 @@ public class FirstService : FirstServiceDefinition.FirstServiceDefinitionBase
             Console.WriteLine(requestPayload.Content);
             allContent.AppendLine(requestPayload.Content);
         }
-
-   
         
         var response = new Response { Message = allContent.ToString() };
         return response;
@@ -43,6 +41,8 @@ public class FirstService : FirstServiceDefinition.FirstServiceDefinitionBase
 
             await responseStream.WriteAsync(new Response { Message = "response " + i });
         }
+        
+        context.ResponseTrailers.Add(new Metadata.Entry("trailer-key", "trailer-value"));
     }
 
     public override async Task DuplexStreamingDemo(IAsyncStreamReader<Request> requestStream, IServerStreamWriter<Response> responseStream, ServerCallContext context)
