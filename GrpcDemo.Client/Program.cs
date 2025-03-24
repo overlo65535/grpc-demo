@@ -21,13 +21,13 @@ void UnaryTest(FirstServiceDefinition.FirstServiceDefinitionClient client)
 {
     var request = new Request() { Content = "Client" };
     
-    var response = client.Unary(request);
+    var response = client.UnaryDemo(request, deadline: DateTime.Now.AddSeconds(10));
     Console.WriteLine(response.Message);
 }
 
 async Task ClientStreamingTest(FirstServiceDefinition.FirstServiceDefinitionClient client)
 {
-    var clientStream = client.ClientStreaming();
+    var clientStream = client.ClientStreamingDemo();
     for (var i = 0; i < 10; i++)
     {
         await clientStream.RequestStream.WriteAsync(new Request() { Content = i.ToString() });
@@ -40,7 +40,7 @@ async Task ClientStreamingTest(FirstServiceDefinition.FirstServiceDefinitionClie
 async Task ServerStreamingTest(FirstServiceDefinition.FirstServiceDefinitionClient client)
 {
     var request = new Request() { Content = "Client" };
-    using var response = client.ServerStreaming(request);
+    using var response = client.ServerStreamingDemo(request);
 
     await foreach (var responseItem in response.ResponseStream.ReadAllAsync())
     {
@@ -50,7 +50,7 @@ async Task ServerStreamingTest(FirstServiceDefinition.FirstServiceDefinitionClie
 
 async Task DuplexStreamingTest(FirstServiceDefinition.FirstServiceDefinitionClient client)
 {
-    using var call = client.DuplexStreaming();
+    using var call = client.DuplexStreamingDemo();
     for (var i = 0; i < 10; i++)
     {
         await call.RequestStream.WriteAsync(new Request() { Content = i.ToString() });

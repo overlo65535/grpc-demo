@@ -11,8 +11,8 @@ message Response {
 }
 
 service FirstServiceDefinition {
-  rpc Unary (Request) returns (Response);
-  rpc ClientStreaming (stream Request) returns (Response);
-  rpc ServerStreaming (Request) returns (stream Response);
-  rpc DuplexStreaming (stream Request) returns (stream Response);
+  rpc UnaryDemo (Request) returns (Response);
+  rpc ClientStreamingDemo (stream Request) returns (Response);
+  rpc ServerStreamingDemo (Request) returns (stream Response);
+  rpc DuplexStreamingDemo (stream Request) returns (stream Response);
 }

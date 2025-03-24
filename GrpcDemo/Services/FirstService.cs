@@ -5,7 +5,7 @@ namespace GrpcDemo.Services;
 
 public class FirstService : FirstServiceDefinition.FirstServiceDefinitionBase
 {
-    public override Task<Response> Unary(Request request, ServerCallContext context)
+    public override Task<Response> UnaryDemo(Request request, ServerCallContext context)
     {
         var response = new Response
         {
@@ -15,7 +15,7 @@ public class FirstService : FirstServiceDefinition.FirstServiceDefinitionBase
         return Task.FromResult(response);
     }
 
-    public override async Task<Response> ClientStreaming(IAsyncStreamReader<Request> requestStream, ServerCallContext context)
+    public override async Task<Response> ClientStreamingDemo(IAsyncStreamReader<Request> requestStream, ServerCallContext context)
     {
         var allContent = new StringBuilder();
         while (await requestStream.MoveNext())
@@ -31,7 +31,7 @@ public class FirstService : FirstServiceDefinition.FirstServiceDefinitionBase
         return response;
     }
 
-    public override async Task ServerStreaming(Request request, IServerStreamWriter<Response> responseStream, ServerCallContext context)
+    public override async Task ServerStreamingDemo(Request request, IServerStreamWriter<Response> responseStream, ServerCallContext context)
     {
         for (int i = 0; i < 100; i++)
         {
@@ -39,7 +39,7 @@ public class FirstService : FirstServiceDefinition.FirstServiceDefinitionBase
         }
     }
 
-    public override async Task DuplexStreaming(IAsyncStreamReader<Request> requestStream, IServerStreamWriter<Response> responseStream, ServerCallContext context)
+    public override async Task DuplexStreamingDemo(IAsyncStreamReader<Request> requestStream, IServerStreamWriter<Response> responseStream, ServerCallContext context)
     {
         await foreach (var request in requestStream.ReadAllAsync())
         {
