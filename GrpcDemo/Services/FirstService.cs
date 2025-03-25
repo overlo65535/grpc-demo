@@ -12,6 +12,8 @@ public class FirstService : FirstServiceDefinition.FirstServiceDefinitionBase
             Message = "Hello " + request.Content
         };
         
+        context.WriteOptions = new WriteOptions(WriteFlags.NoCompress);
+        
         return Task.FromResult(response);
     }
 
