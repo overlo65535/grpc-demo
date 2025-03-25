@@ -13,6 +13,7 @@
 
     <ItemGroup>
         <PackageReference Include="Grpc.AspNetCore" Version="2.64.0"/>
+        <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.3" />
     </ItemGroup>
 
 </Project>
