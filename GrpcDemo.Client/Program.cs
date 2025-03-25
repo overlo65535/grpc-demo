@@ -2,13 +2,27 @@
 
 using Grpc.Core;
 using Grpc.Net.Client;
+using GrpcDemo.Client.Interceptors;
 using GrpcDemo.Protos;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
-var clientOptions = new GrpcChannelOptions();
+//var clientOptions = new GrpcChannelOptions();
+//using var channel = GrpcChannel.ForAddress("https://localhost:7222", clientOptions);
+//var client = new FirstServiceDefinition.FirstServiceDefinitionClient(channel);
 
-using var channel = GrpcChannel.ForAddress("https://localhost:7222", clientOptions);
+var services = new ServiceCollection();
+services.AddTransient<ClientRequestsLogger>();
+services.AddGrpcClient<FirstServiceDefinition.FirstServiceDefinitionClient>(options =>
+{
+    options.Address = new Uri("https://localhost:7222");
+}).AddInterceptor<ClientRequestsLogger>();
 
-var client = new FirstServiceDefinition.FirstServiceDefinitionClient(channel);
+services.AddLogging(configure => configure.AddConsole());
+
+var serviceProvider = services.BuildServiceProvider();
+
+var client = serviceProvider.GetRequiredService<FirstServiceDefinition.FirstServiceDefinitionClient>(); 
 
 UnaryTest(client);
 await ClientStreamingTest(client);
