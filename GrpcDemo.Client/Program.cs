@@ -36,8 +36,8 @@ void UnaryTest(FirstServiceDefinition.FirstServiceDefinitionClient client)
     var request = new Request() { Content = "Client" };
     var headers = new Metadata
     {
-        { "Content-Type", "application/grpc" },
-        { "Culture-Name", Thread.CurrentThread.CurrentCulture.Name }
+        { "Culture-Name", Thread.CurrentThread.CurrentCulture.Name },
+        //{ "grpc-accept-encoding", "gzip"}
     };
 
     var response = client.UnaryDemo(request, deadline: DateTime.UtcNow.AddSeconds(10), headers: headers);

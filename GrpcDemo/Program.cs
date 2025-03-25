@@ -1,10 +1,17 @@
+using System.IO.Compression;
 using GrpcDemo.Interceptors;
 using GrpcDemo.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddGrpc(options => options.Interceptors.Add<RequestLogger>());
+builder.Services.AddGrpc(options =>
+{
+    options.Interceptors.Add<RequestLogger>();
+    options.ResponseCompressionAlgorithm = "gzip";
+    options.ResponseCompressionLevel = CompressionLevel.SmallestSize;
+    // options.CompressionProviders
+});
 builder.Services.AddLogging(configure => configure.AddConsole());
 
 
