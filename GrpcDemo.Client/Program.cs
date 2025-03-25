@@ -2,6 +2,7 @@
 
 using Grpc.Core;
 using Grpc.Net.Client;
+using Grpc.Net.Client.Configuration;
 using GrpcDemo.Client.Interceptors;
 using GrpcDemo.Protos;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,9 +15,26 @@ using Microsoft.Extensions.Logging;
 var services = new ServiceCollection();
 services.AddTransient<ClientRequestsLogger>();
 services.AddGrpcClient<FirstServiceDefinition.FirstServiceDefinitionClient>(options =>
-{
-    options.Address = new Uri("https://localhost:7222");
-}).AddInterceptor<ClientRequestsLogger>();
+    {
+        options.Address = new Uri("https://localhost:7222");
+    }).ConfigureChannel(channelOptions => channelOptions.ServiceConfig = new ServiceConfig {
+        MethodConfigs =
+        {
+            new MethodConfig
+            {
+                Names = { MethodName.Default },
+                RetryPolicy = new RetryPolicy
+                {
+                    MaxAttempts = 5,
+                    InitialBackoff = TimeSpan.FromSeconds(1),
+                    MaxBackoff = TimeSpan.FromSeconds(5),
+                    BackoffMultiplier = 1.5,
+                    RetryableStatusCodes = { StatusCode.Unavailable }
+                }
+            }
+        }
+    })
+    .AddInterceptor<ClientRequestsLogger>();
 
 services.AddLogging(configure => configure.AddConsole());
 
@@ -40,7 +58,7 @@ void UnaryTest(FirstServiceDefinition.FirstServiceDefinitionClient client)
         //{ "grpc-accept-encoding", "gzip"}
     };
 
-    var response = client.UnaryDemo(request, deadline: DateTime.UtcNow.AddSeconds(10), headers: headers);
+    var response = client.UnaryDemo(request, deadline: DateTime.UtcNow.AddSeconds(30), headers: headers);
     Console.WriteLine(response.Message);
 }
 
