@@ -1,5 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
+using Auth;
 using Grpc.Core;
 using Grpc.Net.Client;
 using Grpc.Net.Client.Configuration;
@@ -17,7 +18,8 @@ services.AddTransient<ClientRequestsLogger>();
 services.AddGrpcClient<FirstServiceDefinition.FirstServiceDefinitionClient>(options =>
     {
         options.Address = new Uri("https://localhost:7222");
-    }).ConfigureChannel(channelOptions => channelOptions.ServiceConfig = new ServiceConfig {
+    }).ConfigureChannel(channelOptions => channelOptions.ServiceConfig = new ServiceConfig
+    {
         MethodConfigs =
         {
             // Retry policy
@@ -41,7 +43,17 @@ services.AddGrpcClient<FirstServiceDefinition.FirstServiceDefinitionClient>(opti
             }
         }
     })
-    .AddInterceptor<ClientRequestsLogger>();
+    .AddInterceptor<ClientRequestsLogger>()
+    .AddCallCredentials((_, metadata) =>
+    {
+        var token = JwtHelper.GenerateJwtToken("TestUser");
+        if (!string.IsNullOrEmpty(token))
+        {
+            metadata.Add("Authorization", $"Bearer {token}");
+        }
+        return Task.CompletedTask;
+    })
+    ;
 
 services.AddLogging(configure => configure.AddConsole());
 
@@ -55,6 +67,7 @@ await ServerStreamingTest(client);
 await DuplexStreamingTest(client);
 
 Console.ReadLine();
+return;
 
 void UnaryTest(FirstServiceDefinition.FirstServiceDefinitionClient client)
 {

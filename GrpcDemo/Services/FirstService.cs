@@ -1,10 +1,13 @@
 ﻿using System.Text;
 using Grpc.Core;
 using GrpcDemo.Protos;
+using Microsoft.AspNetCore.Authorization;
+
 namespace GrpcDemo.Services;
 
 public class FirstService : FirstServiceDefinition.FirstServiceDefinitionBase
 {
+    [Authorize]
     public override Task<Response> UnaryDemo(Request request, ServerCallContext context)
     {
         // Added for testing retry scenarios

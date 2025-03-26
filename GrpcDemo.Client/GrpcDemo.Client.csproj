@@ -24,4 +24,8 @@
         </Protobuf>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Auth\Auth.csproj" />
+    </ItemGroup>
+
 </Project>

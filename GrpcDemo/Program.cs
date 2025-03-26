@@ -1,6 +1,11 @@
 using System.IO.Compression;
+using System.Security.Claims;
+using System.Text;
+using Auth;
 using GrpcDemo.Interceptors;
 using GrpcDemo.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +18,24 @@ builder.Services.AddGrpc(options =>
     // options.CompressionProviders
 });
 builder.Services.AddLogging(configure => configure.AddConsole());
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateLifetime = false,
+            ValidateIssuerSigningKey = false,
+            IssuerSigningKey = JwtHelper.SecurityKey
+        };
+    }); 
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(JwtBearerDefaults.AuthenticationScheme, policy => policy.RequireClaim(ClaimTypes.Name));
+});
 
 
 var app = builder.Build();
