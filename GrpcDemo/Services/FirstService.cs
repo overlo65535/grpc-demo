@@ -7,10 +7,11 @@ public class FirstService : FirstServiceDefinition.FirstServiceDefinitionBase
 {
     public override Task<Response> UnaryDemo(Request request, ServerCallContext context)
     {
-        if (!context.RequestHeaders.Any(x => x.Key == "grpc-previous-rpc-attempts"))
+        // Added for testing retry scenarios
+        /*if (!context.RequestHeaders.Any(x => x.Key == "grpc-previous-rpc-attempts"))
         {
             throw new RpcException(new Status(StatusCode.Unavailable, "try again"));
-        }
+        }*/
 
         var response = new Response
         {

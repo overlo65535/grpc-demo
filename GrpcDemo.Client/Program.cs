@@ -120,6 +120,6 @@ async Task DuplexStreamingTest(FirstServiceDefinition.FirstServiceDefinitionClie
     {
         Console.WriteLine(responseItem.Message);
     }
-    
+
     await call.RequestStream.CompleteAsync();
 }
