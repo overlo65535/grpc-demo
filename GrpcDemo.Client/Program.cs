@@ -20,6 +20,7 @@ services.AddGrpcClient<FirstServiceDefinition.FirstServiceDefinitionClient>(opti
     }).ConfigureChannel(channelOptions => channelOptions.ServiceConfig = new ServiceConfig {
         MethodConfigs =
         {
+            // Retry policy
             new MethodConfig
             {
                 Names = { MethodName.Default },
@@ -30,7 +31,13 @@ services.AddGrpcClient<FirstServiceDefinition.FirstServiceDefinitionClient>(opti
                     MaxBackoff = TimeSpan.FromSeconds(5),
                     BackoffMultiplier = 1.5,
                     RetryableStatusCodes = { StatusCode.Unavailable }
-                }
+                },
+                /*HedgingPolicy = new HedgingPolicy
+                {
+                    MaxAttempts = 5,
+                    NonFatalStatusCodes = { StatusCode.Unavailable },
+                    HedgingDelay = TimeSpan.FromMicroseconds(500)
+                }*/
             }
         }
     })
