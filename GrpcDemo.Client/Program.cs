@@ -2,6 +2,7 @@
 
 using Auth;
 using Grpc.Core;
+using Grpc.Health.V1;
 using Grpc.Net.Client;
 using Grpc.Net.Client.Configuration;
 using GrpcDemo.Client.Interceptors;
@@ -61,6 +62,8 @@ var serviceProvider = services.BuildServiceProvider();
 
 var client = serviceProvider.GetRequiredService<FirstServiceDefinition.FirstServiceDefinitionClient>(); 
 
+
+await HealthCheck();
 UnaryTest(client);
 await ClientStreamingTest(client);
 await ServerStreamingTest(client);
@@ -135,4 +138,13 @@ async Task DuplexStreamingTest(FirstServiceDefinition.FirstServiceDefinitionClie
     }
 
     await call.RequestStream.CompleteAsync();
+}
+
+async Task HealthCheck()
+{
+    using var channel = GrpcChannel.ForAddress("https://localhost:7222");
+    var healthClient = new Health.HealthClient(channel);
+    var healthResult = await healthClient.CheckAsync(new HealthCheckRequest());
+    
+    Console.WriteLine(healthResult.Status);
 }

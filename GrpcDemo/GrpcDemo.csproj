@@ -13,6 +13,7 @@
 
     <ItemGroup>
         <PackageReference Include="Grpc.AspNetCore" Version="2.64.0"/>
+        <PackageReference Include="Grpc.AspNetCore.HealthChecks" Version="2.70.0" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.3" />
         <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.3" />
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.7.0" />
