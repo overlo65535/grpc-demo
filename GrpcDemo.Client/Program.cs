@@ -5,10 +5,12 @@ using Grpc.Core;
 using Grpc.Health.V1;
 using Grpc.Net.Client;
 using Grpc.Net.Client.Configuration;
+using Grpc.Reflection.V1Alpha;
 using GrpcDemo.Client.Interceptors;
 using GrpcDemo.Protos;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using ServerReflectionClient = Grpc.Reflection.V1Alpha.ServerReflection.ServerReflectionClient;
 
 //var clientOptions = new GrpcChannelOptions();
 //using var channel = GrpcChannel.ForAddress("https://localhost:7222", clientOptions);
@@ -60,9 +62,9 @@ services.AddLogging(configure => configure.AddConsole());
 
 var serviceProvider = services.BuildServiceProvider();
 
-var client = serviceProvider.GetRequiredService<FirstServiceDefinition.FirstServiceDefinitionClient>(); 
+var client = serviceProvider.GetRequiredService<FirstServiceDefinition.FirstServiceDefinitionClient>();
 
-
+await DiscoverAndDisplayGrpcServices();
 await HealthCheck();
 UnaryTest(client);
 await ClientStreamingTest(client);
@@ -146,5 +148,26 @@ async Task HealthCheck()
     var healthClient = new Health.HealthClient(channel);
     var healthResult = await healthClient.CheckAsync(new HealthCheckRequest());
     
-    Console.WriteLine(healthResult.Status);
+    Console.WriteLine($"Health Status: {healthResult.Status}");
+}
+
+async Task DiscoverAndDisplayGrpcServices()
+{
+    using var channel = GrpcChannel.ForAddress("https://localhost:7222");
+    var serverReflectionClient = new ServerReflectionClient(channel);
+    ServerReflectionRequest request = new ServerReflectionRequest
+    {
+        ListServices = ""
+    };
+    using var call = serverReflectionClient.ServerReflectionInfo();
+    await call.RequestStream.WriteAsync(request);
+    await call.RequestStream.CompleteAsync();
+    
+    await foreach (var response in call.ResponseStream.ReadAllAsync())
+    {
+        foreach (var item in response.ListServicesResponse.Service)
+        {
+            Console.WriteLine(item.Name);
+        }
+    }
 }

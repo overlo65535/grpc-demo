@@ -37,6 +37,7 @@ builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy(JwtBearerDefaults.AuthenticationScheme, policy => policy.RequireClaim(ClaimTypes.Name));
 });
+builder.Services.AddGrpcReflection();
 
 builder.Services.AddGrpcHealthChecks().AddCheck("health check", () => HealthCheckResult.Healthy("OK"), ["gRPC Demo"]);
 
@@ -46,6 +47,7 @@ var app = builder.Build();
 app.MapGrpcService<GreeterService>();
 app.MapGrpcService<FirstService>();
 app.MapGrpcHealthChecksService();
+app.MapGrpcReflectionService(); // Allow to discover gRPC services using Postman
 app.MapGet("/",
     () =>
         "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
